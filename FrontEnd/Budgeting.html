@@ -30,29 +30,14 @@
   <div class="container">
     <div class="column">
       <h2>Categories</h2>
-      <ul class="categories-list">
-        <li>
-          <div class="category-color" style="background-color: #FF6384;"></div>
-          Category 1
-        </li>
-        <li>
-          <div class="category-color" style="background-color: #36A2EB;"></div>
-          Category 2
-        </li>
-        <li>
-          <div class="category-color" style="background-color: #FFCD56;"></div>
-          Category 3
-        </li>
-       
+      <ul class="categories-list" id="category-list">
+        <!-- Categories will be dynamically added here -->
       </ul>
+      <button id="add-category-button">Add Category</button>
     </div>
     <div class="column">
       <h2>Expenses</h2>
-      <div class="expense-options">
-        <button class="toggle-option active" data-period="daily">Daily</button>
-        <button class="toggle-option" data-period="weekly">Weekly</button>
-        <button class="toggle-option" data-period="monthly">Monthly</button>
-      </div>
+    
       <div class="expense-list">
         <!-- Expenses will be dynamically added here -->
       </div>
@@ -92,10 +77,6 @@
           <label for="expense-category">Expense Category:</label>
           <select id="expense-category" required>
             <option value="">Select Category</option>
-            <option value="Category 1">Category 1</option>
-            <option value="Category 2">Category 2</option>
-            <option value="Category 3">Category 3</option>
-            <!-- Add more categories as needed -->
           </select>
         </div>
         <button type="submit">Add</button>
