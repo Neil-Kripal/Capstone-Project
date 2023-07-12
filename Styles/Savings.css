@@ -41,57 +41,10 @@
   }
   
   .container {
-    display: flex;
-  }
-  
-  .column {
-    flex: 1;
     padding: 20px;
   }
   
-  .column h2 {
-    margin-bottom: 10px;
-  }
-  
-  .categories-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .categories-list li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .category-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  .expense-options {
-    margin-bottom: 10px;
-  }
-  
-  .expense-options button {
-    padding: 5px 10px;
-    margin-right: 5px;
-    background-color: #ddd;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .expense-options button.active {
-    background-color: #bbb;
-  }
-  
-  .expense-list {
-    margin-bottom: 20px;
-  }
-  
-  .add-expense-button {
+  .add-goal-button {
     padding: 10px;
     background-color: #4CAF50;
     color: #ffffff;
@@ -143,8 +96,7 @@
     font-weight: bold;
   }
   
-  .form-group input,
-  .form-group select {
+  .form-group input {
     width: 100%;
     padding: 5px;
     border-radius: 4px;
@@ -160,19 +112,46 @@
     cursor: pointer;
   }
   
-  .budget-info {
+  .goal-item {
+    margin-bottom: 20px;
+  }
+  
+  .goal-info {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 10px;
+    background-color: #D0FFD7;
+    border-radius: 10px;
+    padding: 10px;
   }
   
-  .budget-info label,
-  .budget-info input,
-  .budget-info button {
-    margin-right: 10px;
+  .goal-progress {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 4px;
+    height: 20px;
+    overflow: hidden;
   }
   
-  .budget-remaining {
+  .goal-progress-bar {
+    background-color: #4CAF50;
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+  
+  .goal-progress-text {
     font-weight: bold;
+    margin-left: 5px;
+  }
+  
+  .goal-add-funds-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
   }
   

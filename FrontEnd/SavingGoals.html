@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Saving Goals Page</title>
+  <link rel="stylesheet" href="/Styles/Savings.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css">
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+          <a class="navbar-brand ms-0 me-auto" href="/FrontEnd/HomePage.html">
+            <img src="/Assets/ExpenseWise.png" alt="Logo">
+        </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item active">
+            <a class="nav-link active" href="HomePage.html">Dashboard</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Budgeting.html">Budgeting</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="SavingGoals.html">Saving Goals</a>
+        </li>
+      </ul>
+    </div>
+    <a href="#"><img src="/Assets/UserIcon.png" alt="Account Settings" style="width: 50px; height: 50px;"></a>
+        </div>
+      </nav>
+      <div class="container">
+        <button class="add-goal-button">Add Saving Goal</button>
+        <div id="add-goal-modal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add Saving Goal</h3>
+            <form id="add-goal-form">
+              <div class="form-group">
+                <label for="goal-name">Goal Name:</label>
+                <input type="text" id="goal-name" required>
+              </div>
+              <div class="form-group">
+                <label for="goal-amount">Goal Amount:</label>
+                <input type="number" id="goal-amount" min="0" required>
+              </div>
+              <div class="form-group">
+                <label for="goal-due-date">Due Date:</label>
+                <input type="date" id="goal-due-date" required>
+              </div>
+              <div class="form-group">
+                <label for="invite-people">Invite People:</label>
+                <input type="text" id="invite-people">
+              </div>
+              <button type="submit">Add Goal</button>
+            </form>
+          </div>
+        </div>
+        <div id="goal-list"></div>
+      </div>
+    
+
+  <script src="/BackEnd/Savings.js"></script>
+</body>
+</html>
