@@ -175,4 +175,23 @@
   .budget-remaining {
     font-weight: bold;
   }
+
+  .expense-list .expense-item {
+    background-color: #a3fdb1;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+  }
+  
+  .expense-list .expense-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .category-color-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
   
