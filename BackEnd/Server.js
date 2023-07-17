@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./models/Users');
+const Cors = require('cors');
 
 const app = express();
-const PORT = 5500;
+const PORT = 3000;
 const mongoURL = 'mongodb://127.0.0.1:27017/ExpenseWise';
 
 mongoose
@@ -11,10 +12,14 @@ mongoose
   .then(() => {
     console.log('Connected to the database');
 
+    app.use(Cors());
+
     app.use(express.json());
 
     app.post('/signup', async (req, res) => {
       const { username, password } = req.body;
+      console.log(req.body);
+      console.log("signed up");
     
       try {
         const existingUser = await User.findOne({ username });
@@ -33,6 +38,7 @@ mongoose
     });
 
     app.post('/login', async (req, res) => {
+      console.log("Logged in");
       const { username, password } = req.body;
       try {
         const user = await User.findOne({ username, password });

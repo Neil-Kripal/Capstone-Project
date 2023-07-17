@@ -22,7 +22,7 @@
   <div id="signup-form-container" class="signup-form-container">
     <div class="signup-form">
       <h2>Sign Up</h2>
-      <form id="signup-form">
+      <form id="signup-form" onsubmit="event.preventDefault(); signup();">
         <input type="text" id="signup-username" placeholder="Username" required>
         <input type="password" id="signup-password" placeholder="Password" required>
         <button type="submit">Create Account</button>
