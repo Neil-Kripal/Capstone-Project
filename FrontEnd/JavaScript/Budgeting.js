@@ -177,6 +177,63 @@ document.addEventListener("DOMContentLoaded", function() {
     budgetRemainingValue.textContent = remainingValue.toFixed(2);
   }
 
+// Function to save an expense
+function saveExpense() {
+  const userId = localStorage.getItem("userId");
+  const username = document.getElementById("login-username").value;
+  const expenseName = document.getElementById("expense-name").value;
+  const expenseAmount = parseFloat(document.getElementById("expense-amount").value);
+  const expenseDate = document.getElementById("expense-date").value;
+  const expenseCategory = document.getElementById("expense-category").value;
+
+  const expense = {
+    name: expenseName,
+    amount: expenseAmount,
+    date: expenseDate,
+    category: expenseCategory,
+  };
+
+  $.ajax({
+    url: "http://127.0.0.1:3000/saveExpense",
+    type: "POST",
+    data: { userId: userId, expense: expense },
+    success: function (response) {
+      alert("Expense saved successfully!");
+    },
+    error: function (error) {
+      alert("Error saving expense.");
+    },
+  });
+}
+
+// Fetch user data
+function fetchUserData() {
+  const userId = localStorage.getItem("userId");
+  $.ajax({
+    url: 'http://127.0.0.1:3000/login',
+    type: 'POST',
+    data: { userId: userId },
+    success: function (response) {
+      // Render categories, expenses, and budget remaining
+      expenseCategories = response.categories;
+      renderCategories();
+      renderExpenses(response.expenses);
+      calculateBudgetRemaining();
+
+      // Set budget input value if it exists
+      if (response.budget) {
+        budgetInput.value = response.budget;
+      }
+    },
+    error: function (error) {
+      console.error('Error fetching user data:', error);
+      alert('Error fetching user data');
+    },
+  });
+}
+// Call fetchUserData when the page loads
+fetchUserData();
+
   // Render Categories on Page Load
   renderCategories();
 });
