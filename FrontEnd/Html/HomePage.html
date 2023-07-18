@@ -8,70 +8,51 @@
 
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-          <a class="navbar-brand ms-0 me-auto" href="/FrontEnd/HomePage.html">
-            <img src="/Assets/ExpenseWise.png" alt="Logo">
-        </a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item active">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand ms-0 me-auto" href="HomePage.html">
+        <img src="/Assets/ExpenseWise.png" alt="Logo">
+      </a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item active">
             <a class="nav-link active" href="HomePage.html">Dashboard</a>
           </li>
-        <li class="nav-item">
-          <a class="nav-link" href="Budgeting.html">Budgeting</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="SavingGoals.html">Saving Goals</a>
-        </li>
-      </ul>
+          <li class="nav-item">
+            <a class="nav-link" href="Budgeting.html">Budgeting</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="SavingGoals.html">Saving Goals</a>
+          </li>
+        </ul>
+      </div>
+      <a href="Signin.html"><img src="/Assets/UserIcon.png" alt="Account Settings" style="width: 50px; height: 50px;"></a>
     </div>
-    <a href="Signin.html"><img src="/Assets/UserIcon.png" alt="Account Settings" style="width: 50px; height: 50px;"></a>
-        </div>
-      </nav>
+  </nav>
+
   <h2>Welcome to the Expense Wise Dashboard</h2>
 
-    <div class="content">
-        <div class="chart-and-expenses">
-          <div class="pie-chart" style="background-color:#D0FFD7; padding: 20px;">
-            <canvas id="expense-chart"></canvas>
-          </div>
-          <div class="total-expenses">
-            <h2>Total Expenses</h2>
-            <ul>
-              <li>Expense 1</li>
-              <li>Expense 2</li>
-              <li>Expense 3</li>
-            </ul>
-          </div>
-        </div>
-        <div id="calendar"></div>
+  <div class="content">
+    <div class="chart-and-expenses">
+      <div class="pie-chart" style="background-color:#D0FFD7; padding: 20px;">
+        <canvas id="expense-chart"></canvas>
       </div>
-  
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+      <div class="total-expenses">
+        <h2>Total Expenses</h2>
+        <ul id="expense-list">
+          <!-- Expense items will be dynamically added here -->
+        </ul>
+      </div>
+    </div>
+    <div id="calendar"></div>
+  </div>
 
-  <script>
-    var ctx = document.getElementById('expense-chart').getContext('2d');
-    var expenseChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Others'],
-        datasets: [{
-          data: [20, 15, 10, 30, 25],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#e7e9ed'],
-          borderColor: '#ffffff',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    });
-    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <script>    
     $(document).ready(function() {
       $('#calendar').fullCalendar({
         header: {
@@ -102,5 +83,7 @@
       });
     });
   </script>
+<script src="/FrontEnd/JavaScript/HomePage.js"></script>
+
 </body>
 </html>

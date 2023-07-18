@@ -144,6 +144,23 @@ app.post('/saveSavingGoal', async (req, res) => {
   }
 });
 
+app.post('/userData', async (req, res) => {
+  const { userId: username } = req.body;
+  console.log(req.body);
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+  
+    res.status(200).json({ message: 'User Found', expenses: user.expenses, categories: user.categories });
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+
     app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-store');
       next();
