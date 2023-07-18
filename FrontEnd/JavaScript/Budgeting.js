@@ -141,20 +141,53 @@ document.addEventListener('DOMContentLoaded', function () {
   
       const expenseCategoryElement = document.createElement('p');
       expenseCategoryElement.innerHTML = `Category:<span class="category-color" style="background-color: ${selectedCategory.color}"></span>${selectedCategory.name}`;
-  
+      
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add('delete-button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', function () {
+        deleteExpense(expense.id);
+      });
+
       expenseInfo.appendChild(expenseNameElement);
       expenseInfo.appendChild(expenseAmountElement);
       expenseInfo.appendChild(expenseDateElement);
       expenseInfo.appendChild(expenseCategoryElement);
       expenseItem.appendChild(expenseInfo);
       expenseList.appendChild(expenseItem);
+      expenseInfo.appendChild(deleteButton);
+      expenseItem.appendChild(expenseInfo);
+      expenseList.appendChild(expenseItem);
     });
   
     // Recalculate budget remaining
     calculateBudgetRemaining();
-  }
+  }  
+
+    // Function to delete an expense
+    function deleteExpense(expenseId) {
+      const userId = localStorage.getItem('userId');
   
+      $.ajax({
+        url: 'http://127.0.0.1:3000/deleteExpense',
+        type: 'POST',
+        data: JSON.stringify({ userId: userId, expenseId: expenseId }),
+        contentType: 'application/json',
+        success: function (response) {
+          // Remove the deleted expense from the expenses array
+          expenses = expenses.filter((expense) => expense.id !== expenseId);
   
+          // Render the updated expenses
+          renderExpenses();
+  
+          alert('Expense deleted successfully!');
+        },
+        error: function (error) {
+          alert('Error deleting expense.');
+        },
+      });
+    }
+
 
   // Set Budget Button
   setBudgetButton.addEventListener('click', function () {

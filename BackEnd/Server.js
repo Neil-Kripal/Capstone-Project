@@ -160,6 +160,26 @@ app.post('/userData', async (req, res) => {
   }
 });
 
+// Endpoint for deleting an expense
+app.post('/deleteExpense', async (req, res) => {
+  const { userId: username, expenseId } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.expenses = user.expenses.filter((expense) => expense.id !== expenseId);
+    await user.save();
+
+    res.status(200).json({ message: 'Expense deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting expense:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
 
     app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-store');
