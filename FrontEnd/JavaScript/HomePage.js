@@ -64,7 +64,8 @@ function fetchUserData() {
     $.ajax({
       url: 'http://127.0.0.1:3000/user',
       type: 'POST', // Use POST instead of GET
-      data: { userId: userId }, // Pass the userId as a parameter
+      data: JSON.stringify({ userId: userId }), // Pass the userId as a parameter
+      contentType: 'application/json',
       success: function (response) {
         const expenseCategories = response.categories; // Update the property name
         const expenses = response.expenses;
