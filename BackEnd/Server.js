@@ -65,9 +65,47 @@ mongoose
       }
     });
 
+    app.post('/user', async (req,res) => {
+      const {userId:username} = req.body;
+      console.log(req.body);
+      try {
+        const user = await User.findOne({ username });
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+      
+        res.status(200).json({ message: 'User Found', expenses:user.expenses, categories:user.categories});
+      } catch (err) {
+        console.error('Error saving expense:', err);
+        res.status(500).json({ error: 'An error occurred' });
+      }
+    });
+
+
+    app.post('/saveCategories', async (req, res) => {
+      const { userId: username, category } = req.body;
+    
+      try {
+        const user = await User.findOne({ username });
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+    
+        user.categories.push(category);
+        await user.save();
+    
+        res.status(200).json({ message: 'Category saved successfully', category }); // Return the saved category
+      } catch (err) {
+        console.error('Error saving category:', err);
+        res.status(500).json({ error: 'An error occurred' });
+      }
+    });
+    
+
 // Endpoint for saving an expense
 app.post('/saveExpense', async (req, res) => {
-  const { username, expense } = req.body;
+  const { userId:username, expense } = req.body;
+  console.log(req.body);
   console.log("expense", expense);
 
   try {
@@ -88,7 +126,7 @@ app.post('/saveExpense', async (req, res) => {
 
 // Endpoint for saving a saving goal
 app.post('/saveSavingGoal', async (req, res) => {
-  const { username, savingGoal } = req.body;
+  const { userId:username, savingGoal } = req.body;
 
   try {
     const user = await User.findOne({ username });

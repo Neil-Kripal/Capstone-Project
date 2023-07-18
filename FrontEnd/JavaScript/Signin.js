@@ -44,7 +44,7 @@
     if (response.ok) {
       const data = await response.json();
       const userId = data.username;
-
+    
       localStorage.setItem("userId", userId);
       
       alert("Login successful");
