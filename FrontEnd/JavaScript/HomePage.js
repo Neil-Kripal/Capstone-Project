@@ -1,6 +1,6 @@
 // Function to fetch user data and update the page
 function fetchUserData() {
-  // Retrieve the userId from localStorage
+  // Retrieve the userId and user's name from localStorage
   const userId = localStorage.getItem('userId');
 
   // Make an AJAX request to fetch data from the database based on the userId
@@ -14,9 +14,16 @@ function fetchUserData() {
       const expenses = response.expenses;
       console.log(expenseCategories);
 
+      // Update the welcome message
+      const welcomeMessageElement = document.getElementById('welcome-message');
+      welcomeMessageElement.textContent = `Welcome to Expense Wise ${userId}!`;
+
       // Update the pie chart and expense list
       updatePieChart(expenseCategories, expenses);
       renderExpenseList(expenses, expenseCategories);
+
+      // Update the calendar events
+      updateCalendarEvents(expenses, expenseCategories);
     },
     error: function (error) {
       console.error('Error fetching user data:', error);
@@ -24,6 +31,7 @@ function fetchUserData() {
     },
   });
 }
+
 
 
 // Function to update the pie chart
@@ -62,26 +70,53 @@ function updatePieChart(expenseCategories, expenses) {
     });
   }
   
+// Function to update the FullCalendar events
+function updateCalendarEvents(expenses, expenseCategories) {
+  const events = expenses.map((expense) => {
+    const selectedCategory = expenseCategories.find((category) => category.name === expense.category);
+    return {
+      title: `${expense.name} - $${expense.amount.toFixed(2)}`,
+      start: expense.date,
+      color: selectedCategory.color, 
+    };
+  });
+
+  $('#calendar').fullCalendar('addEventSource', events);
+}
+  
   // Function to render the expense list
-  function renderExpenseList(expenses, expenseCategories) {
-    const expenseListElement = document.getElementById('expense-list');
-    expenseListElement.innerHTML = '';
-  
-    expenses.forEach((expense) => {
-      const selectedCategory = expenseCategories.find((category) => category.name === expense.category);
-  
-      const expenseItem = document.createElement('li');
-      expenseItem.textContent = expense.name;
-  
-      const categoryColorCircle = document.createElement('span');
-      categoryColorCircle.classList.add('category-color-circle');
-      categoryColorCircle.style.backgroundColor = selectedCategory.color;
-  
-      expenseItem.prepend(categoryColorCircle);
-  
-      expenseListElement.appendChild(expenseItem);
-    });
-  }
+function renderExpenseList(expenses, expenseCategories) {
+  const expenseListElement = document.getElementById('expense-list');
+  const totalExpensesValueElement = document.getElementById('total-expenses-value');
+
+  let totalExpenses = 0;
+
+  expenseListElement.innerHTML = '';
+
+  expenses.forEach((expense) => {
+    const selectedCategory = expenseCategories.find((category) => category.name === expense.category);
+
+    const expenseItem = document.createElement('div'); // Use a div element instead of an li
+    expenseItem.classList.add('expense-item');
+
+    const categoryColorCircle = document.createElement('span');
+    categoryColorCircle.classList.add('category-color-circle');
+    categoryColorCircle.style.backgroundColor = selectedCategory.color;
+
+    const expenseName = document.createElement('span');
+    expenseName.textContent = expense.name;
+
+    expenseItem.appendChild(categoryColorCircle);
+    expenseItem.appendChild(expenseName);
+
+    expenseListElement.appendChild(expenseItem);
+
+    totalExpenses += expense.amount;
+
+  });
+
+  totalExpensesValueElement.textContent = totalExpenses.toFixed(2);
+}
 
   fetchUserData();
 

@@ -30,7 +30,7 @@
     </div>
   </nav>
 
-  <h2>Welcome to the Expense Wise Dashboard</h2>
+  <h2 id="welcome-message" class="welcome-message"></h2>
 
   <div class="content">
     <div class="chart-and-expenses">
@@ -38,9 +38,8 @@
         <canvas id="expense-chart"></canvas>
       </div>
       <div class="total-expenses">
-        <h2>Total Expenses</h2>
+        <h2>Total Expenses: $<span id="total-expenses-value">0</span></h2>
         <ul id="expense-list">
-          <!-- Expense items will be dynamically added here -->
         </ul>
       </div>
     </div>
@@ -63,22 +62,8 @@
         defaultView: 'month',
         editable: true,
         eventLimit: true,
+        displayEventTime:false,
         events: [
-          {
-            title: 'Event 1',
-            start: '2023-07-01',
-            end: '2023-07-05'
-          },
-          {
-            title: 'Event 2',
-            start: '2023-07-07',
-            end: '2023-07-10'
-          },
-          {
-            title: 'Event 3',
-            start: '2023-07-12',
-            end: '2023-07-15'
-          }
         ]
       });
     });
