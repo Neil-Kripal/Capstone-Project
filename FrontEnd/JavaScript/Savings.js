@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Variables
   const addGoalButton = document.querySelector(".add-goal-button");
   const addGoalModal = document.getElementById("add-goal-modal");
@@ -8,18 +8,140 @@ document.addEventListener("DOMContentLoaded", function() {
 
   let Goals = [];
 
-  // Add Goal Button - Show Modal
-  addGoalButton.addEventListener("click", function() {
-    addGoalModal.style.display = "block";
-  });
+  // Function to add funds to a goal item
+  function addFundsToGoal(goalItem, goalName, goalAmount, goalDueDate, goalInvitePeople) {
+    const addFundsButton = goalItem.querySelector(".goal-add-funds-button");
+    const progressBar = goalItem.querySelector(".goal-progress-bar");
+    const progressText = goalItem.querySelector(".goal-progress-text");
+    const goalFunds = goalItem.querySelector(".goal-funds");
+
+    // Find the corresponding goal in the Goals array
+    const goalIndex = Goals.findIndex((g) => g.name === goalName);
+
+    addFundsButton.addEventListener("click", function () {
+      const currentWidth = parseFloat(progressBar.style.width);
+      const fundsToAdd = parseFloat(prompt("Enter the amount to add:"));
+
+      if (isNaN(fundsToAdd) || fundsToAdd <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      const newWidth = currentWidth + (fundsToAdd / goalAmount) * 100;
+      progressBar.style.width = `${newWidth}%`;
+      progressText.textContent = `${newWidth.toFixed(2)}%`;
+
+      // Update the fundsAdded value in the Goals array
+      if (goalIndex !== -1) {
+        Goals[goalIndex].fundsAdded += fundsToAdd;
+        // Update the displayed total funds
+        goalFunds.textContent = `Total Funds: $${isNaN(Goals[goalIndex].fundsAdded) ? 0 : Goals[goalIndex].fundsAdded}`;
+
+        // Call the updateFundsAddedInDatabase function to update the fundsAdded value in the database
+        updateFundsAddedInDatabase(goalName, Goals[goalIndex].fundsAdded);
+      }
+    });
+  }
 
   // Close Modal
-  closeModal.addEventListener("click", function() {
+  closeModal.addEventListener("click", function () {
     addGoalModal.style.display = "none";
   });
 
+   // Show Modal when "Add Saving Goal" button is clicked
+   addGoalButton.addEventListener("click", function () {
+    addGoalModal.style.display = "block";
+  });
+
+  // Fetch user data and render saving goals on page load or refresh
+  function fetchUserData() {
+    const userId = localStorage.getItem("userId");
+
+    // Check if userId exists before making AJAX request
+    if (!userId) {
+      alert("User ID not found.");
+      return;
+    }
+
+    // Fetch user data from the server
+    $.ajax({
+      url: "http://127.0.0.1:3000/user",
+      type: "POST",
+      data: JSON.stringify({ userId: userId }),
+      contentType: "application/json",
+      success: function (response) {
+        // Store the fetched saving goals
+        Goals = response.savingGoals;
+
+        // Render the saving goals
+        renderSavingGoals();
+      },
+      error: function (error) {
+        console.error("Error fetching user data:", error);
+        alert("Error fetching user data");
+      },
+    });
+  }
+
+  // Function to update fundsAdded value in the database
+  function updateFundsAddedInDatabase(goalName, fundsAdded) {
+    const userId = localStorage.getItem("userId");
+
+    // Send the updated fundsAdded value to the server to update it in the database
+    $.ajax({
+      url: "http://127.0.0.1:3000/updateFundsAdded",
+      type: "POST",
+      data: JSON.stringify({ userId: userId, goalName: goalName, fundsAdded: fundsAdded }),
+      contentType: "application/json",
+      success: function (response) {
+        console.log("FundsAdded updated successfully!");
+      },
+      error: function (error) {
+        console.error("Error updating fundsAdded:", error);
+        alert("Error updating fundsAdded");
+      },
+    });
+  }
+
+  // Function to render saving goals
+  function renderSavingGoals() {
+    // Clear existing goals
+    goalList.innerHTML = "";
+
+    // Iterate over saving goals and create goal items
+    Goals.forEach((goal) => {
+      // Calculate the initial progress based on the funds already added
+      const initialProgress = (goal.fundsAdded / goal.amount) * 100 || 0;
+
+      const goalItem = document.createElement("div");
+      goalItem.classList.add("goal-item");
+      goalItem.innerHTML = `
+        <div class="goal-info" style="background-color: #D0FFD7; border-radius:10px; padding: 10px;">
+          <h4>${goal.name}</h4>
+          <p>Amount: $${goal.amount}</p>
+          <p>Due Date: ${new Date(goal.dueDate).toLocaleDateString("en-US")}</p>
+          <p>Invite People: ${goal.participants.length > 0 ? goal.participants.join(", ") : "None"}</p>
+        </div>
+        <div class="goal-progress">
+          <div class="goal-progress-bar" style="width: ${initialProgress}%;"></div>
+          <span class="goal-progress-text">${initialProgress.toFixed(2)}%</span>
+        </div>
+        <div class="goal-funds">
+          <p>Total Funds: $${isNaN(goal.fundsAdded) ? 0 : goal.fundsAdded}</p>
+        </div>
+        <button class="goal-add-funds-button" style="padding: 5px 10px; margin-top: 10px;">Add Funds</button>
+      `;
+
+      // Append goal item to the goal list
+      goalList.appendChild(goalItem);
+
+      // Add Funds Button
+      addFundsToGoal(goalItem, goal.name, goal.amount);
+    });
+  }
+
   // Add Goal Form Submission
-  goalForm.addEventListener("submit", function(e) {
+  goalForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     // Get form values
@@ -35,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
       <div class="goal-info" style="background-color: #D0FFD7; border-radius:10px; padding: 10px;">
         <h4>${goalName}</h4>
         <p>Amount: $${goalAmount}</p>
-        <p>Due Date: ${goalDueDate}</p>
+        <p>Due Date: ${new Date(goalDueDate).toLocaleDateString("en-US")}</p>
         <p>Invite People: ${goalInvitePeople}</p>
       </div>
       <div class="goal-progress">
@@ -51,8 +173,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Append goal item to the goal list
     goalList.appendChild(goalItem);
 
-    // Clear form inputs
-    goalForm.reset();
+     // Add Funds Button
+     addFundsToGoal(goalItem, goalName, goalAmount, goalDueDate, goalInvitePeople);
+
+     // Clear form inputs
+     goalForm.reset();
 
     // Set progress bar width based on initial goal amount
     const progressBar = goalItem.querySelector(".goal-progress-bar");
@@ -60,109 +185,46 @@ document.addEventListener("DOMContentLoaded", function() {
     progressBar.style.width = "0%";
     progressText.textContent = "0%";
 
-    // Add Funds Button
-    const addFundsButton = goalItem.querySelector(".goal-add-funds-button");
-    addFundsButton.addEventListener("click", function() {
-      const currentWidth = parseFloat(progressBar.style.width);
-      const fundsToAdd = parseFloat(prompt("Enter the amount to add:"));
-      const newWidth = currentWidth + (fundsToAdd / goalAmount) * 100;
-      progressBar.style.width = `${newWidth}%`;
-      progressText.textContent = `${newWidth.toFixed(2)}%`;
-
-      // Update total funds
-      const goalFunds = goalItem.querySelector(".goal-funds");
-      const totalFunds = parseFloat(goalFunds.textContent.replace("Total Funds: $", ""));
-      const newTotalFunds = totalFunds + fundsToAdd;
-      goalFunds.textContent = `Total Funds: $${newTotalFunds}`;
-    });
-
     // Push the new goal to the Goals array and then save it
-    Goals.push({ goalName, goalAmount, goalDueDate, goalInvitePeople });
+    Goals.push({ name: goalName, amount: goalAmount, dueDate: goalDueDate, participants: goalInvitePeople.split(",") });
     saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople);
   });
 
-  // Save Saving Goal
-  function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople ) {
-    const userId = localStorage.getItem("userId");
-    const participants = goalInvitePeople.split(",").map((participant) => participant.trim());
+  function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople, fundsAdded) {
+    return new Promise((resolve, reject) => {
+      const userId = localStorage.getItem("userId");
+      const participants = goalInvitePeople.split(",").map((participant) => participant.trim());
 
-    const savingGoals = {
-      name: goalName,
-      amount: goalAmount,
-      dueDate: goalDueDate,
-      participants: participants,
-      
-    };
+      const dueDate = new Date(goalDueDate);
 
-    // Send the savingGoal data to the server to save it in the database
-    $.ajax({
-      url: "http://127.0.0.1:3000/saveSavingGoal",
-      type: "POST",
-      data: JSON.stringify({ userId: userId, savingGoal: savingGoals }),
-      contentType: "application/json",
-      success: function(response) {
-        console.log(savingGoals);
-        
-        alert("Saving goal saved successfully!");
-      },
-      error: function(error) {
-        alert("Error saving saving goal.");
-      },
-    });
-  }
+      const savingGoal = {
+        name: goalName,
+        amount: goalAmount,
+        dueDate: dueDate.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        }),
+        participants: participants,
+        fundsAdded: fundsAdded,
+      };
 
-  // Fetch user data and render saving goals on page load or refresh
-  function fetchUserData() {
-    const userId = localStorage.getItem("userId");
-
-    // Fetch user data from the server
-    $.ajax({
-      url: "http://127.0.0.1:3000/user",
-      type: "POST",
-      data: JSON.stringify({ userId: userId }),
-      contentType: "application/json",
-      success: function(response) {
-        // Store the fetched saving goals
-        console.log(response.savingGoals)
-        Goals = response.savingGoals;
-
-        // Render the saving goals
-        renderSavingGoals();
-      },
-      error: function(error) {
-        console.error("Error fetching user data:", error);
-        alert("Error fetching user data");
-      },
-    });
-  }
-
-  // Render Saving Goals
-  function renderSavingGoals() {
-    // Clear existing goals
-    goalList.innerHTML = "";
-
-    // Iterate over saving goals and create goal items
-    Goals.forEach((savingGoal) => {
-      const goalItem = document.createElement("div");
-      goalItem.classList.add("goal-item");
-      goalItem.innerHTML = `
-        <div class="goal-info" style="background-color: #D0FFD7; border-radius:10px; padding: 10px;">
-          <h4>${savingGoal.name}</h4>
-          <p>Amount: $${savingGoal.amount}</p>
-          <p>Due Date: ${savingGoal.dueDate}</p>
-          <p>Invite People: ${savingGoal.participants.join(", ")}</p>
-        </div>
-        <div class="goal-progress">
-          <div class="goal-progress-bar"></div>
-          <span class="goal-progress-text">0%</span>
-        </div>
-        <div class="goal-funds">
-          <p>Total Funds: {savingGoal.fundsAdded}</p>
-        </div>
-        <button class="goal-add-funds-button" style="padding: 5px 10px; margin-top: 10px;">Add Funds</button>
-      `;
-
-      goalList.appendChild(goalItem);
+      // Send the savingGoal data to the server to update it in the database
+      $.ajax({
+        url: "http://127.0.0.1:3000/saveSavingGoal",
+        type: "POST",
+        data: JSON.stringify({ userId: userId, savingGoal: savingGoal }),
+        contentType: "application/json",
+        success: function (response) {
+          console.log(savingGoal);
+          alert("Saving goal saved successfully!");
+          resolve(); // Resolve the promise when the update is successful
+        },
+        error: function (error) {
+          alert("Error saving saving goal.");
+          reject(error); // Reject the promise if there's an error
+        },
+      });
     });
   }
 

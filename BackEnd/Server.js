@@ -127,8 +127,8 @@ app.post('/saveExpense', async (req, res) => {
 
 // Endpoint for saving a saving goal
 app.post('/saveSavingGoal', async (req, res) => {
-  const { userId:username, savingGoal } = req.body;
-  console.log(req.body, "save saving goal");
+  const { userId: username, savingGoal } = req.body;
+  console.log(req.body);
 
   try {
     const user = await User.findOne({ username });
@@ -145,6 +145,33 @@ app.post('/saveSavingGoal', async (req, res) => {
     res.status(500).json({ error: 'An error occurred' });
   }
 });
+
+app.post('/updateFundsAdded', async (req, res) => {
+  const { userId: username, goalName, fundsAdded } = req.body;
+  console.log(req.body);
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const savingGoalIndex = user.savingGoals.findIndex(goal => goal.name === goalName);
+    if (savingGoalIndex === -1) {
+      return res.status(404).json({ error: 'Saving goal not found' });
+    }
+
+    // Update the fundsAdded value for the corresponding saving goal
+    user.savingGoals[savingGoalIndex].fundsAdded = fundsAdded;
+    await user.save();
+
+    res.status(200).json({ message: 'FundsAdded updated successfully' });
+  } catch (err) {
+    console.error('Error updating fundsAdded:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
 
 app.post('/userData', async (req, res) => {
   const { userId: username } = req.body;
@@ -221,7 +248,6 @@ app.post('/getBudget', async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while fetching the budget' });
   }
 });
-
 
 
     app.use((req, res, next) => {

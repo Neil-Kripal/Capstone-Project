@@ -91,7 +91,7 @@
     margin-bottom: 20px;
   }
   
-  .add-expense-button {
+  .add-expense-button, .delete-button, .budget-button, .category-button{
     padding: 10px;
     background-color: #4CAF50;
     color: #ffffff;
@@ -195,3 +195,9 @@
     margin-right: 5px;
   }
   
+  .expense-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    margin-bottom: 10px; 
+  }

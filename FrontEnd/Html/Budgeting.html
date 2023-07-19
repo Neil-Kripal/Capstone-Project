@@ -35,7 +35,7 @@
       <ul class="categories-list" id="category-list">
         <div class="category-options"></div>
       </ul>
-      <button id="add-category-button">Add Category</button>
+      <button class="category-button" id="add-category-button">Add Category</button>
     </div>
 
     <div id="add-category-modal" class="modal">
@@ -57,8 +57,10 @@
     </div>
 
     <div class="column">
+      <div class="expense-heading">
       <h2>Expenses</h2>
       <button class="add-expense-button">Add Expense</button>
+      </div>
       <div class="expense-list" id="epensesList">
         <!-- Adds Expenses Here -->
       </div>
@@ -70,7 +72,7 @@
         <label for="budget-input">Set Budget: </label>
         <input type="number" id="budget-input" min="0">
         
-        <button id="set-budget-button">Set Budget</button>
+        <button class="budget-button" id="set-budget-button">Set Budget</button>
       </div>
       <div class="budget-remaining">
         Budget Remaining: <span id="dollar-sign">$</span><span id="budget-remaining-value">0</span>
