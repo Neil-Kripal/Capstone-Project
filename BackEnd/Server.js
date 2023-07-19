@@ -193,8 +193,9 @@ app.post('/saveBudget', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.budget = { amount: budget };
+    user.budget.amount = budget;
     await user.save();
+    console.log(budget)
 
     return res.json({ message: 'Budget saved successfully' });
   } catch (error) {
@@ -202,6 +203,26 @@ app.post('/saveBudget', async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while saving the budget' });
   }
 });
+
+
+app.post('/getBudget', async (req, res) => {
+  const { userId: username } = req.body; // Remove the 'budget' field
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Retrieve the budget value from the user object and send it in the response
+    return res.json({ budget: user.budget.amount });
+  } catch (error) {
+    console.error('Error fetching budget:', error);
+    return res.status(500).json({ error: 'An error occurred while fetching the budget' });
+  }
+});
+
+
 
     app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-store');

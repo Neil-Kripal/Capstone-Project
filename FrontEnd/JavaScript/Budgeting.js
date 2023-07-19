@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Add category to expense form options
       const expenseCategoryOption = document.createElement('option');
-      expenseCategoryOption.value = category.name;
       expenseCategoryOption.textContent = category.name;
       document.getElementById('expense-category').appendChild(expenseCategoryOption);
     });
@@ -104,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderExpenses() {
     // Clear the existing expense items
+    const expensesList = document.getElementById('expensesList');
     expenseList.innerHTML = '';
   
     // Loop through the expenses array and create expense items
@@ -188,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-
   // Set Budget Button
 setBudgetButton.addEventListener('click', function () {
   const budgetValue = parseFloat(budgetInput.value);
@@ -197,17 +196,17 @@ setBudgetButton.addEventListener('click', function () {
   calculateBudgetRemaining();
 });
 
-// Function to save the budget
-function saveBudget(budget) {
+// Update the saveBudget function
+function saveBudget(budgetValue) { 
   const userId = localStorage.getItem('userId');
 
   $.ajax({
     url: 'http://127.0.0.1:3000/saveBudget',
     type: 'POST',
-    data: JSON.stringify({ userId: userId, budget: budget }),
+    data: JSON.stringify({ userId: userId, budget: budgetValue }), 
     contentType: 'application/json',
     success: function (response) {
-      console.log(budget);
+      console.log(response); 
       alert('Budget saved successfully!');
     },
     error: function (error) {
@@ -216,6 +215,72 @@ function saveBudget(budget) {
   });
 }
 
+function displaySavedBudget() {
+  const userId = localStorage.getItem('userId');
+
+  $.ajax({
+    url: 'http://127.0.0.1:3000/getBudget',
+    type: 'POST',
+    data: JSON.stringify({ userId: userId }),
+    contentType: 'application/json',
+    success: function (response) {
+      const budget = parseFloat(response.budget);
+      if (!isNaN(budget)) {
+        const budgetInput = document.getElementById('budget-input');
+        budgetInput.value = budget.toFixed(2); // Display the fetched budget value in the input field
+
+        const budgetRemainingValue = document.getElementById('budget-remaining-value');
+        budgetRemainingValue.textContent = budget.toFixed(2); // Update the "Budget Remaining" section with the fetched budget value
+        updateBudgetRemainingColor();
+
+        calculateBudgetRemaining();
+      } else {
+        alert('Error: Budget value is invalid');
+      }
+    },
+    error: function (error) {
+      alert('Error fetching budget.');
+    },
+  });
+}
+
+// Function to change the color of the "Budget Remaining" section based on the value
+function updateBudgetRemainingColor() {
+  const budgetRemainingValue = document.getElementById('budget-remaining-value');
+  const dollarSign = document.getElementById('dollar-sign');
+  const remainingValue = parseFloat(budgetRemainingValue.textContent);
+
+  if (remainingValue >= 0) {
+    // If the remaining value is non-negative, set the color to green
+    budgetRemainingValue.style.color = 'green';
+    dollarSign.style.color = 'green';
+  } else {
+    // If the remaining value is negative, set the color to red
+    budgetRemainingValue.style.color = 'red';
+    dollarSign.style.color = 'red';
+  }
+}
+
+// Add an event listener to call the displaySavedBudget function when the page is loaded
+window.addEventListener('load', function () {
+  displaySavedBudget();
+});
+
+ // Calculate Budget Remaining
+ function calculateBudgetRemaining() {
+  const expenseItems = document.querySelectorAll('.expense-item');
+  let totalExpenses = 0;
+  expenseItems.forEach(function (item) {
+    const expenseAmount = parseFloat(
+      item.querySelector('.expense-info p:nth-child(2)').textContent.split('$')[1]
+    );
+    totalExpenses += expenseAmount;
+  });
+  const budgetValue = parseFloat(budgetRemainingValue.textContent);
+  const remainingValue = budgetValue - totalExpenses;
+  budgetRemainingValue.textContent = remainingValue.toFixed(2);
+  updateBudgetRemainingColor();
+}
 
   // Toggle Expense Options
   toggleOptions.forEach(function (option) {
@@ -227,20 +292,7 @@ function saveBudget(budget) {
     });
   });
 
-  // Calculate Budget Remaining
-  function calculateBudgetRemaining() {
-    const expenseItems = document.querySelectorAll('.expense-item');
-    let totalExpenses = 0;
-    expenseItems.forEach(function (item) {
-      const expenseAmount = parseFloat(
-        item.querySelector('.expense-info p:nth-child(2)').textContent.split('$')[1]
-      );
-      totalExpenses += expenseAmount;
-    });
-    const budgetValue = parseFloat(budgetRemainingValue.textContent);
-    const remainingValue = budgetValue - totalExpenses;
-    budgetRemainingValue.textContent = remainingValue.toFixed(2);
-  }
+ 
 
   function saveCategories() {
     const userId = localStorage.getItem('userId');
@@ -259,14 +311,6 @@ function saveBudget(budget) {
       data: JSON.stringify({ userId: userId, category: category }),
       contentType: 'application/json',
       success: function (response) {
-        // Retrieve the saved category with the assigned ID
-        //const savedCategory = response.category;
-
-        // Add the saved category to the expenseCategories array
-        //expenseCategories.push(savedCategory);
-
-        // Render the updated categories
-        //renderCategories();
 
         alert('Category saved successfully!');
       },
@@ -277,42 +321,36 @@ function saveBudget(budget) {
   }
 
   // Function to save an expense
-  function saveExpense() {
-    const userId = localStorage.getItem('userId');
-    const expenseName = document.getElementById('expense-name').value;
-    const expenseAmount = parseFloat(document.getElementById('expense-amount').value);
-    const expenseDate = document.getElementById('expense-date').value;
-    const expenseCategory = document.getElementById('expense-category').value;
+function saveExpense() {
+  const userId = localStorage.getItem('userId');
+  const expenseName = document.getElementById('expense-name').value;
+  const expenseAmount = parseFloat(document.getElementById('expense-amount').value);
+  const expenseDate = document.getElementById('expense-date').value;
+  const expenseCategory = document.getElementById('expense-category').value;
 
-    const expense = {
-      name: expenseName,
-      amount: expenseAmount,
-      date: expenseDate,
-      category: expenseCategory,
-    };
+  const expense = {
+    name: expenseName,
+    amount: expenseAmount,
+    date: expenseDate,
+    category: expenseCategory,
+  };
 
-    $.ajax({
-      url: 'http://127.0.0.1:3000/saveExpense',
-      type: 'POST',
-      data: JSON.stringify({ userId: userId, expense: expense }),
-      contentType: 'application/json',
-      success: function (response) {
-        // Retrieve the saved expense with the assigned ID
-        //const savedExpense = response.expense;
+  $.ajax({
+    url: 'http://127.0.0.1:3000/saveExpense',
+    type: 'POST',
+    data: JSON.stringify({ userId: userId, expense: expense }),
+    contentType: 'application/json',
+    success: function (response) {
+      alert('Expense saved successfully!');
+      fetchUserData();
+    },
+    error: function (error) {
+      alert('Error saving expense.');
+    },
+  });
 
-        // Add the saved expense to the expenses array
-        //expenses.push(savedExpense);
-
-        // Render the updated expenses
-        //renderExpenses();
-
-        alert('Expense saved successfully!');
-      },
-      error: function (error) {
-        alert('Error saving expense.');
-      },
-    });
-  }
+  // Call renderExpenses to refresh the list of expenses
+}
 
   function fetchUserData() {
     const userId = localStorage.getItem('userId');
@@ -325,15 +363,16 @@ function saveBudget(budget) {
         // Assign the fetched expenses and categories to the respective arrays
         expenses = response.expenses;
         expenseCategories = response.categories;
-
+  
         // Render categories, expenses, and budget remaining
         renderCategories();
         renderExpenses();
+        displaySavedBudget();
         calculateBudgetRemaining();
-
-        // Set budget input value if it exists
-        if (response.budget) {
-          budgetInput.value = response.budget;
+        
+        // Check if the budget exists and is a number
+        if (typeof response.budget === 'number') {
+          budgetInput.value = response.budget.toFixed(2);
         }
       },
       error: function (error) {
