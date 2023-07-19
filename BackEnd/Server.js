@@ -82,6 +82,16 @@ mongoose
       }
     });
 
+    app.get('/getUsers', async (req, res) => {
+      try {
+        const users = await User.find({}, '_id username'); // Fetch all users and return only '_id' and 'username' fields
+        res.status(200).json({ users });
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).json({ error: 'An error occurred' });
+      }
+    });
+
 
     app.post('/saveCategories', async (req, res) => {
       const { userId: username, category } = req.body;

@@ -8,6 +8,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let Goals = [];
 
+   // Function to fetch users from the database
+   function fetchUsers() {
+    // Assuming the API endpoint to fetch users is 'http://127.0.0.1:3000/getUsers'
+    $.ajax({
+      url: "http://127.0.0.1:3000/getUsers",
+      type: "GET",
+      contentType: "application/json",
+      success: function (response) {
+        const users = response.users; // Assuming the users array is returned in the response
+        populateUserDropdown(users);
+      },
+      error: function (error) {
+        console.error("Error fetching users:", error);
+        alert("Error fetching users");
+      },
+    });
+  }
+
+  function populateUserDropdown(users) {
+    const invitePeopleInput = document.getElementById("invite-people");
+    invitePeopleInput.innerHTML = ""; // Clear existing options
+
+    users.forEach((user) => {
+      const option = document.createElement("option");
+      option.value = user.id; // Assuming each user object has an 'id' property
+      option.textContent = user.name; // Assuming each user object has a 'name' property
+      invitePeopleInput.appendChild(option);
+    });
+  }
+
+  // Fetch users when the page loads or refreshes
+  fetchUsers();
+
   // Function to add funds to a goal item
   function addFundsToGoal(goalItem, goalName, goalAmount, goalDueDate, goalInvitePeople) {
     const addFundsButton = goalItem.querySelector(".goal-add-funds-button");
@@ -139,8 +172,8 @@ document.addEventListener("DOMContentLoaded", function () {
       addFundsToGoal(goalItem, goal.name, goal.amount);
     });
   }
-
-  // Add Goal Form Submission
+  
+    // Add Goal Form Submission
   goalForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -148,7 +181,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const goalName = document.getElementById("goal-name").value;
     const goalAmount = parseFloat(document.getElementById("goal-amount").value);
     const goalDueDate = document.getElementById("goal-due-date").value;
-    const goalInvitePeople = document.getElementById("invite-people").value;
+    const invitePeopleInput = document.getElementById("invite-people");
+    const selectedUsers = Array.from(invitePeopleInput.selectedOptions).map((option) => option.value);
+
 
     // Create goal item
     const goalItem = document.createElement("div");
@@ -186,8 +221,8 @@ document.addEventListener("DOMContentLoaded", function () {
     progressText.textContent = "0%";
 
     // Push the new goal to the Goals array and then save it
-    Goals.push({ name: goalName, amount: goalAmount, dueDate: goalDueDate, participants: goalInvitePeople.split(",") });
-    saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople);
+    Goals.push({ name: goalName, amount: goalAmount, dueDate: goalDueDate, participants: selectedUsers });
+    saveSavingGoal(goalName, goalAmount, goalDueDate, selectedUsers);
   });
 
   function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople, fundsAdded) {
