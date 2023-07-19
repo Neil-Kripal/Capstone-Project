@@ -1,3 +1,31 @@
+// Function to fetch user data and update the page
+function fetchUserData() {
+  // Retrieve the userId from localStorage
+  const userId = localStorage.getItem('userId');
+
+  // Make an AJAX request to fetch data from the database based on the userId
+  $.ajax({
+    url: 'http://127.0.0.1:3000/user',
+    type: 'POST', // Use POST instead of GET
+    data: JSON.stringify({ userId: userId }), // Pass the userId as a parameter
+    contentType: 'application/json',
+    success: function (response) {
+      const expenseCategories = response.categories; // Update the property name
+      const expenses = response.expenses;
+      console.log(expenseCategories);
+
+      // Update the pie chart and expense list
+      updatePieChart(expenseCategories, expenses);
+      renderExpenseList(expenses, expenseCategories);
+    },
+    error: function (error) {
+      console.error('Error fetching user data:', error);
+      alert('Error fetching user data');
+    },
+  });
+}
+
+
 // Function to update the pie chart
 function updatePieChart(expenseCategories, expenses) {
     const ctx = document.getElementById('expense-chart').getContext('2d');
@@ -54,30 +82,9 @@ function updatePieChart(expenseCategories, expenses) {
       expenseListElement.appendChild(expenseItem);
     });
   }
+
+  fetchUserData();
+
   
-// Function to fetch user data and update the page
-function fetchUserData() {
-    // Retrieve the userId from localStorage
-    const userId = localStorage.getItem('userId');
-  
-    // Make an AJAX request to fetch data from the database based on the userId
-    $.ajax({
-      url: 'http://127.0.0.1:3000/user',
-      type: 'POST', // Use POST instead of GET
-      data: JSON.stringify({ userId: userId }), // Pass the userId as a parameter
-      contentType: 'application/json',
-      success: function (response) {
-        const expenseCategories = response.categories; // Update the property name
-        const expenses = response.expenses;
-  
-        // Update the pie chart and expense list
-        updatePieChart(expenseCategories, expenses);
-        renderExpenseList(expenses, expenseCategories);
-      },
-      error: function (error) {
-        console.error('Error fetching user data:', error);
-        alert('Error fetching user data');
-      },
-    });
-  }
+
   

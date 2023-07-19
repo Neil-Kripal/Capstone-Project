@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const goalForm = document.getElementById("add-goal-form");
   const goalList = document.getElementById("goal-list");
 
-  let savingGoals = [];
+  let Goals = [];
 
   // Add Goal Button - Show Modal
   addGoalButton.addEventListener("click", function() {
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Add Goal Form Submission
   goalForm.addEventListener("submit", function(e) {
     e.preventDefault();
+
     // Get form values
     const goalName = document.getElementById("goal-name").value;
     const goalAmount = parseFloat(document.getElementById("goal-amount").value);
@@ -75,29 +76,33 @@ document.addEventListener("DOMContentLoaded", function() {
       goalFunds.textContent = `Total Funds: $${newTotalFunds}`;
     });
 
-    // Save Saving Goal
+    // Push the new goal to the Goals array and then save it
+    Goals.push({ goalName, goalAmount, goalDueDate, goalInvitePeople });
     saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople);
   });
 
   // Save Saving Goal
-  function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople) {
+  function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople ) {
     const userId = localStorage.getItem("userId");
     const participants = goalInvitePeople.split(",").map((participant) => participant.trim());
 
-    const savingGoal = {
+    const savingGoals = {
       name: goalName,
       amount: goalAmount,
       dueDate: goalDueDate,
       participants: participants,
+      
     };
 
     // Send the savingGoal data to the server to save it in the database
     $.ajax({
       url: "http://127.0.0.1:3000/saveSavingGoal",
       type: "POST",
-      data: JSON.stringify({ userId: userId, savingGoal: savingGoal }),
+      data: JSON.stringify({ userId: userId, savingGoal: savingGoals }),
       contentType: "application/json",
       success: function(response) {
+        console.log(savingGoals);
+        
         alert("Saving goal saved successfully!");
       },
       error: function(error) {
@@ -118,7 +123,8 @@ document.addEventListener("DOMContentLoaded", function() {
       contentType: "application/json",
       success: function(response) {
         // Store the fetched saving goals
-        savingGoals = response.savingGoals;
+        console.log(response.savingGoals)
+        Goals = response.savingGoals;
 
         // Render the saving goals
         renderSavingGoals();
@@ -136,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
     goalList.innerHTML = "";
 
     // Iterate over saving goals and create goal items
-    savingGoals.forEach(function(savingGoal) {
+    Goals.forEach((savingGoal) => {
       const goalItem = document.createElement("div");
       goalItem.classList.add("goal-item");
       goalItem.innerHTML = `
@@ -151,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
           <span class="goal-progress-text">0%</span>
         </div>
         <div class="goal-funds">
-          <p>Total Funds: $0</p>
+          <p>Total Funds: {savingGoal.fundsAdded}</p>
         </div>
         <button class="goal-add-funds-button" style="padding: 5px 10px; margin-top: 10px;">Add Funds</button>
       `;

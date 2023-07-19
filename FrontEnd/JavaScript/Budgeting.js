@@ -145,8 +145,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const deleteButton = document.createElement('button');
       deleteButton.classList.add('delete-button');
       deleteButton.textContent = 'Delete';
+      console.log(expense._id)
       deleteButton.addEventListener('click', function () {
-        deleteExpense(expense.id);
+        deleteExpense(expense._id);
       });
 
       expenseInfo.appendChild(expenseNameElement);
@@ -156,8 +157,6 @@ document.addEventListener('DOMContentLoaded', function () {
       expenseItem.appendChild(expenseInfo);
       expenseList.appendChild(expenseItem);
       expenseInfo.appendChild(deleteButton);
-      expenseItem.appendChild(expenseInfo);
-      expenseList.appendChild(expenseItem);
     });
   
     // Recalculate budget remaining
@@ -175,11 +174,12 @@ document.addEventListener('DOMContentLoaded', function () {
         contentType: 'application/json',
         success: function (response) {
           // Remove the deleted expense from the expenses array
-          expenses = expenses.filter((expense) => expense.id !== expenseId);
+          expenses = expenses.filter((expense) => expense._id !== expenseId);
   
           // Render the updated expenses
           renderExpenses();
-  
+          
+          console.log(expenses)
           alert('Expense deleted successfully!');
         },
         error: function (error) {
@@ -190,11 +190,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Set Budget Button
-  setBudgetButton.addEventListener('click', function () {
-    const budgetValue = parseFloat(budgetInput.value);
-    budgetRemainingValue.textContent = budgetValue.toFixed(2);
-    calculateBudgetRemaining();
+setBudgetButton.addEventListener('click', function () {
+  const budgetValue = parseFloat(budgetInput.value);
+  saveBudget(budgetValue); // Call the saveBudget function
+  budgetRemainingValue.textContent = budgetValue.toFixed(2);
+  calculateBudgetRemaining();
+});
+
+// Function to save the budget
+function saveBudget(budget) {
+  const userId = localStorage.getItem('userId');
+
+  $.ajax({
+    url: 'http://127.0.0.1:3000/saveBudget',
+    type: 'POST',
+    data: JSON.stringify({ userId: userId, budget: budget }),
+    contentType: 'application/json',
+    success: function (response) {
+      console.log(budget);
+      alert('Budget saved successfully!');
+    },
+    error: function (error) {
+      alert('Error saving budget.');
+    },
   });
+}
+
 
   // Toggle Expense Options
   toggleOptions.forEach(function (option) {

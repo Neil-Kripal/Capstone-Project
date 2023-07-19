@@ -32,6 +32,7 @@ mongoose
           categories: [], 
           expenses: [], 
           savingGoals: [], 
+          budget,
         });
     
         await newUser.save();
@@ -74,7 +75,7 @@ mongoose
           return res.status(404).json({ error: 'User not found' });
         }
       
-        res.status(200).json({ message: 'User Found', expenses:user.expenses, categories:user.categories});
+        res.status(200).json({ message: 'User Found', expenses:user.expenses, categories:user.categories, savingGoals:user.savingGoals, budget:user.budget});
       } catch (err) {
         console.error('Error saving expense:', err);
         res.status(500).json({ error: 'An error occurred' });
@@ -127,6 +128,7 @@ app.post('/saveExpense', async (req, res) => {
 // Endpoint for saving a saving goal
 app.post('/saveSavingGoal', async (req, res) => {
   const { userId:username, savingGoal } = req.body;
+  console.log(req.body, "save saving goal");
 
   try {
     const user = await User.findOne({ username });
@@ -164,6 +166,8 @@ app.post('/userData', async (req, res) => {
 app.post('/deleteExpense', async (req, res) => {
   const { userId: username, expenseId } = req.body;
 
+  console.log(req.body,"expense.body");
+
   try {
     const user = await User.findOne({ username });
     if (!user) {
@@ -172,7 +176,7 @@ app.post('/deleteExpense', async (req, res) => {
 
     user.expenses = user.expenses.filter((expense) => expense.id !== expenseId);
     await user.save();
-
+    
     res.status(200).json({ message: 'Expense deleted successfully' });
   } catch (err) {
     console.error('Error deleting expense:', err);
@@ -180,6 +184,24 @@ app.post('/deleteExpense', async (req, res) => {
   }
 });
 
+app.post('/saveBudget', async (req, res) => {
+  const { userId: username, budget } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.budget = { amount: budget };
+    await user.save();
+
+    return res.json({ message: 'Budget saved successfully' });
+  } catch (error) {
+    console.error('Error saving budget:', error);
+    return res.status(500).json({ error: 'An error occurred while saving the budget' });
+  }
+});
 
     app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-store');

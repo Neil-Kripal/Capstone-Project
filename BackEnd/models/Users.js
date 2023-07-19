@@ -30,9 +30,14 @@ const userSchema = new mongoose.Schema({
       amount: Number,
       dueDate: Date,
       participants: [String],
-      funds: Number, 
+      fundsAdded: Number, 
     },
   ],
+  budget: {
+    amount: {
+      type: Number,
+    },
+  },
 });
 
 const User = mongoose.model('User', userSchema);
