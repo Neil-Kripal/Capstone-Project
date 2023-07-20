@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     addFundsButton.addEventListener("click", function () {
       goalIndex = Goals.findIndex((g) => g.name === goalName);
-      alert(goalIndex);
+      //alert(goalIndex);
       const currentWidth = parseFloat(progressBar.style.width);
       //alert(prompt("Enter the amount to add:"));
       fundsToAdd = parseFloat(prompt("Enter the amount to add:"));

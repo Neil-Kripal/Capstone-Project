@@ -16,7 +16,7 @@ async function login() {
   
     localStorage.setItem("userId", userId);
     
-    alert("Login successful");
+    //alert("Login successful");
     window.location.href = "HomePage.html";
   } else {
     const data = await response.json();
