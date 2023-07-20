@@ -16,6 +16,7 @@ mongoose
 
     app.use(express.json());
 
+    // Endpoint for signing up 
     app.post('/signup', async (req, res) => {
       const { username, password } = req.body;
       console.log("Signed Up");
@@ -43,6 +44,7 @@ mongoose
       }
     });
 
+    // Endpoint for logging in
     app.post('/login', async (req, res) => {
       const { username, password } = req.body;
     
@@ -65,6 +67,7 @@ mongoose
       }
     });
 
+     // Endpoint for fetching user data to be used for the application
     app.post('/user', async (req,res) => {
       const {userId:username} = req.body;
       console.log(req.body);
@@ -81,7 +84,7 @@ mongoose
       }
     });
 
-
+     // Endpoint for saving the categories
     app.post('/saveCategories', async (req, res) => {
       const { userId: username, category } = req.body;
     
@@ -145,6 +148,7 @@ app.post('/saveSavingGoal', async (req, res) => {
   }
 });
 
+// Endpoint for updating fundsto saving goal
 app.post('/updateFundsAdded', async (req, res) => {
   const { userId: username, goalName, fundsAdded } = req.body;
   console.log(req.body);
@@ -171,7 +175,7 @@ app.post('/updateFundsAdded', async (req, res) => {
   }
 });
 
-
+ // Endpoint for fetching data for expenses page
 app.post('/userData', async (req, res) => {
   const { userId: username } = req.body;
   console.log(req.body);
@@ -210,6 +214,7 @@ app.post('/deleteExpense', async (req, res) => {
   }
 });
 
+ // Endpoint for saving budget
 app.post('/saveBudget', async (req, res) => {
   const { userId: username, budget } = req.body;
 
@@ -230,7 +235,7 @@ app.post('/saveBudget', async (req, res) => {
   }
 });
 
-
+ // Endpoint for fetching the saved budget
 app.post('/getBudget', async (req, res) => {
   const { userId: username } = req.body;
 
