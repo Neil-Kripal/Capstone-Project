@@ -8,38 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let Goals = [];
 
-   // Function to fetch users from the database
-   function fetchUsers() {
-    // Assuming the API endpoint to fetch users is 'http://127.0.0.1:3000/getUsers'
-    $.ajax({
-      url: "http://127.0.0.1:3000/getUsers",
-      type: "GET",
-      contentType: "application/json",
-      success: function (response) {
-        const users = response.users; // Assuming the users array is returned in the response
-        populateUserDropdown(users);
-      },
-      error: function (error) {
-        console.error("Error fetching users:", error);
-        alert("Error fetching users");
-      },
-    });
-  }
+  let fundsToAdd = 0;
 
-  function populateUserDropdown(users) {
-    const invitePeopleInput = document.getElementById("invite-people");
-    invitePeopleInput.innerHTML = ""; // Clear existing options
-
-    users.forEach((user) => {
-      const option = document.createElement("option");
-      option.value = user.id; // Assuming each user object has an 'id' property
-      option.textContent = user.name; // Assuming each user object has a 'name' property
-      invitePeopleInput.appendChild(option);
-    });
-  }
-
-  // Fetch users when the page loads or refreshes
-  fetchUsers();
+  let goalIndex = 0;
 
   // Function to add funds to a goal item
   function addFundsToGoal(goalItem, goalName, goalAmount, goalDueDate, goalInvitePeople) {
@@ -49,11 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const goalFunds = goalItem.querySelector(".goal-funds");
 
     // Find the corresponding goal in the Goals array
-    const goalIndex = Goals.findIndex((g) => g.name === goalName);
+   goalIndex = Goals.findIndex((g) => g.name === goalName);
+    
 
     addFundsButton.addEventListener("click", function () {
+      goalIndex = Goals.findIndex((g) => g.name === goalName);
+      alert(goalIndex);
       const currentWidth = parseFloat(progressBar.style.width);
-      const fundsToAdd = parseFloat(prompt("Enter the amount to add:"));
+      //alert(prompt("Enter the amount to add:"));
+      fundsToAdd = parseFloat(prompt("Enter the amount to add:"));
 
       if (isNaN(fundsToAdd) || fundsToAdd <= 0) {
         alert("Please enter a valid amount.");
@@ -69,6 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
         Goals[goalIndex].fundsAdded += fundsToAdd;
         // Update the displayed total funds
         goalFunds.textContent = `Total Funds: $${isNaN(Goals[goalIndex].fundsAdded) ? 0 : Goals[goalIndex].fundsAdded}`;
+        console.log(fundsToAdd)
+        //console.log(fundsAdded)
+        
 
         // Call the updateFundsAddedInDatabase function to update the fundsAdded value in the database
         updateFundsAddedInDatabase(goalName, Goals[goalIndex].fundsAdded);
@@ -128,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
       contentType: "application/json",
       success: function (response) {
         console.log("FundsAdded updated successfully!");
+        console.log(fundsToAdd);
       },
       error: function (error) {
         console.error("Error updating fundsAdded:", error);
@@ -172,8 +151,8 @@ document.addEventListener("DOMContentLoaded", function () {
       addFundsToGoal(goalItem, goal.name, goal.amount);
     });
   }
-  
-    // Add Goal Form Submission
+
+  // Add Goal Form Submission
   goalForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -181,9 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const goalName = document.getElementById("goal-name").value;
     const goalAmount = parseFloat(document.getElementById("goal-amount").value);
     const goalDueDate = document.getElementById("goal-due-date").value;
-    const invitePeopleInput = document.getElementById("invite-people");
-    const selectedUsers = Array.from(invitePeopleInput.selectedOptions).map((option) => option.value);
-
+    const goalInvitePeople = document.getElementById("invite-people").value;
+    
 
     // Create goal item
     const goalItem = document.createElement("div");
@@ -221,8 +199,8 @@ document.addEventListener("DOMContentLoaded", function () {
     progressText.textContent = "0%";
 
     // Push the new goal to the Goals array and then save it
-    Goals.push({ name: goalName, amount: goalAmount, dueDate: goalDueDate, participants: selectedUsers });
-    saveSavingGoal(goalName, goalAmount, goalDueDate, selectedUsers);
+    Goals.push({ name: goalName, amount: goalAmount, dueDate: goalDueDate, participants: goalInvitePeople.split(","), fundsAdded:0 });
+    saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople, 0);
   });
 
   function saveSavingGoal(goalName, goalAmount, goalDueDate, goalInvitePeople, fundsAdded) {

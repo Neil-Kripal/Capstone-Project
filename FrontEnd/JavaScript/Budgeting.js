@@ -207,7 +207,7 @@ function saveBudget(budgetValue) {
     contentType: 'application/json',
     success: function (response) {
       console.log(response); 
-      alert('Budget saved successfully!');
+      //alert('Budget saved successfully!');
     },
     error: function (error) {
       alert('Error saving budget.');
@@ -235,7 +235,7 @@ function displaySavedBudget() {
 
         calculateBudgetRemaining();
       } else {
-        alert('Error: Budget value is invalid');
+        //alert('Error: Budget value is invalid');
       }
     },
     error: function (error) {
@@ -312,7 +312,7 @@ window.addEventListener('load', function () {
       contentType: 'application/json',
       success: function (response) {
 
-        alert('Category saved successfully!');
+        //alert('Category saved successfully!');
       },
       error: function (error) {
         alert('Error saving category.');
@@ -341,7 +341,7 @@ function saveExpense() {
     data: JSON.stringify({ userId: userId, expense: expense }),
     contentType: 'application/json',
     success: function (response) {
-      alert('Expense saved successfully!');
+      //alert('Expense saved successfully!');
       fetchUserData();
     },
     error: function (error) {
@@ -388,4 +388,3 @@ function saveExpense() {
   // Render Categories on Page Load
   renderCategories();
 });
-

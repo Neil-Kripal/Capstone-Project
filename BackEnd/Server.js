@@ -31,8 +31,7 @@ mongoose
           password,
           categories: [], 
           expenses: [], 
-          savingGoals: [], 
-          budget,
+          savingGoals: [],
         });
     
         await newUser.save();
@@ -78,16 +77,6 @@ mongoose
         res.status(200).json({ message: 'User Found', expenses:user.expenses, categories:user.categories, savingGoals:user.savingGoals, budget:user.budget});
       } catch (err) {
         console.error('Error saving expense:', err);
-        res.status(500).json({ error: 'An error occurred' });
-      }
-    });
-
-    app.get('/getUsers', async (req, res) => {
-      try {
-        const users = await User.find({}, '_id username'); // Fetch all users and return only '_id' and 'username' fields
-        res.status(200).json({ users });
-      } catch (err) {
-        console.error('Error fetching users:', err);
         res.status(500).json({ error: 'An error occurred' });
       }
     });
@@ -243,7 +232,7 @@ app.post('/saveBudget', async (req, res) => {
 
 
 app.post('/getBudget', async (req, res) => {
-  const { userId: username } = req.body; // Remove the 'budget' field
+  const { userId: username } = req.body;
 
   try {
     const user = await User.findOne({ username });
